@@ -66,7 +66,21 @@ export default function Layout({ children }) {
         {
             key: 4,
             label: <Link href="/privilege">Privilege</Link>,
-            icon: <GoLaw />
+            icon: <GoLaw />,
+            children: [
+                {
+                    key: 3.1,
+                    label: <Link href="/admin">Admin</Link>,
+                },
+                {
+                    key: 3.2,
+                    label: <Link href="/department">Head/Manager</Link>,
+                },
+                {
+                    key: 3.3,
+                    label: <Link href="/department">Coordinator</Link>,
+                },
+            ]
         },
     ]
 

@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TermAndCondition {
+  id          Int    @id
+  description String
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  users     User[]
+
+  @@map("roles")
+}
+
+model Department {
+  id           String         @id @default(cuid())
+  name         String
+  created_at   DateTime       @default(now()) @map("created_at")
+  updated_at   DateTime       @updatedAt @map("updated_at")
+  status       Boolean        @default(true)
+  topics       Topic[]
+  users        User[]
+  Announcement Announcement[]
+
+  @@map("departments")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String      @id @default(cuid())
+  name          String?
+  email         String?     @unique
+  emailVerified DateTime?
+  image         String?
+  departmentId  String?
+  roleId        String?
+  topicId       String?
+  status        Boolean     @default(true)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime?   @updatedAt @map("updated_at")
+  accounts      Account[]
+  reacts        React[]
+  sessions      Session[]
+  views         View[]
+  Department    Department? @relation(fields: [departmentId], references: [id])
+  Role          Role?       @relation(fields: [roleId], references: [id])
+  ideas         Idea[]
+  Topic         Topic[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ideas     Idea[]
+
+  @@map("categories")
+}
+
+model Topic {
+  id               String      @id @default(cuid())
+  name             String
+  closureDateIdea  DateTime    @map("closure_date_idea")
+  closureDateTopic DateTime    @map("closure_date_topic")
+  openDate         DateTime    @map("open_date")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+  departmentId     String?
+  Department       Department? @relation(fields: [departmentId], references: [id])
+  ideas            Idea[]
+  User             User?       @relation(fields: [userId], references: [id])
+  userId           String?
+
+  @@map("topics")
+}
+
+model Announcement {
+  id           String      @id @default(cuid())
+  title        String
+  content      String
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  departmentId String?
+  Department   Department? @relation(fields: [departmentId], references: [id])
+
+  @@map("announcements")
+}
+
+model Idea {
+  id         String    @id
+  content    String
+  files      File[]
+  status     Int       @default(0)
+  isAnomyous Boolean   @default(true)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  categoryId String?
+  topicId    String?
+  userId     String?
+  reacts     React[]
+  views      View[]
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  Topic      Topic?    @relation(fields: [topicId], references: [id])
+  User       User?     @relation(fields: [userId], references: [id])
+
+  @@map("views")
+}
+
+model File {
+  id     String  @id @default(cuid())
+  url    String
+  Idea   Idea?   @relation(fields: [ideaId], references: [id])
+  ideaId String?
+
+  @@map("files")
+}
+
+model View {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  ideaId    String?
+  userId    String?
+  updatedAt DateTime @updatedAt @map("updated_at")
+  Idea      Idea?    @relation(fields: [ideaId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+}
+
+model React {
+  id        String   @id @default(cuid())
+  ideaId    String?
+  userId    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  Idea      Idea?    @relation(fields: [ideaId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+}
