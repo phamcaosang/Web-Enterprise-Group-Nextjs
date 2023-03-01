@@ -1,5 +1,13 @@
-import { addDepartment, deleteDepartmentByID, getAllDepartment, updateDepartmentByID } from "@/lib/services/department"
+import { deleteDepartmentByID, updateDepartmentByID } from "@/lib/services/department"
+import { runMiddleware } from "@/utils/cors"
+import Cors from 'cors'
+
 export default async function handler(req, res) {
+    const cors = Cors({
+        methods: ['PUT', 'DELETE'],
+    })
+    await runMiddleware(req, res, cors)
+
     try {
         if (req.method === "PUT") {
             return res.status(200).json(await updateDepartmentByID(req.query.id, req.body))
