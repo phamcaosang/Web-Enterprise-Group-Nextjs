@@ -13,7 +13,6 @@ export default function Index() {
                 value={"Foo"}
                 onChange={(v) => console.log(v)}
             />
-
         </div>
     )
 }

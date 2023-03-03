@@ -6,6 +6,7 @@ import { FcIdea } from "react-icons/fc"
 import { GrGroup } from "react-icons/gr"
 import { GoLaw } from "react-icons/go"
 import Link from 'next/link'
+import { useGetDepartmentsQuery } from '@/redux/slices/Department'
 
 const sampleActivities = [
     "You liked the comment lorem is pul.",
@@ -21,6 +22,7 @@ const sampleActivities = [
 
 
 export default function Layout({ children }) {
+    const { data: departments } = useGetDepartmentsQuery()
     const items = [
         {
             key: 1,
@@ -48,20 +50,26 @@ export default function Layout({ children }) {
             key: 3,
             label: <>Department</>,
             icon: <GrGroup />,
-            children: [
-                {
-                    key: 3.1,
-                    label: <Link href="/department">Department A</Link>,
-                },
-                {
-                    key: 3.2,
-                    label: <Link href="/department">Department B</Link>,
-                },
-                {
-                    key: 3.3,
-                    label: <Link href="/department">Department C</Link>,
-                },
-            ]
+            children: departments?.map(item => {
+                return {
+                    key: item.id,
+                    label: <Link href="/department">{item.name}</Link>
+                }
+            })
+            // [
+            //     {
+            //         key: 3.1,
+            //         label: <Link href="/department">Department A</Link>,
+            //     },
+            //     {
+            //         key: 3.2,
+            //         label: <Link href="/department">Department B</Link>,
+            //     },
+            //     {
+            //         key: 3.3,
+            //         label: <Link href="/department">Department C</Link>,
+            //     },
+            // ]
         },
         {
             key: 4,

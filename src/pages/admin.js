@@ -3,6 +3,7 @@ import Layout from "@/components/Layout/Index"
 import { Tabs } from 'antd'
 import TermCondition from "../components/TermCondition"
 import Department from "../components/Department"
+import { Categories } from '@/components/Category'
 
 export default function Amin() {
     const items = [
@@ -22,15 +23,21 @@ export default function Amin() {
             children: `Content of Tab Pane 3`,
         },
         {
-            key: '4',
+            key: '7',
+            label: `CATEGORRIES`,
+            children: <Categories />,
+        },
+        {
+            key: '5',
             label: `TERMS & CONDITIONS`,
             children: <TermCondition />,
         },
         {
-            key: '5',
+            key: '6',
             label: `STATISTICS`,
             children: `Content of Tab Pane 3`,
         },
+
     ];
     return (
         <Layout>
