@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const indexApi = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: 'https://web-enterprise-group-nextjs.vercel.app/api/' }),
+    baseQuery: fetchBaseQuery({ baseUrl: process.env.BE_URL || '/api/' }),
     endpoints: () => ({}),
-    tagTypes: ["Department", "Category"]
+    tagTypes: ["Department", "Category", "Term"]
 })
+
+// https://web-enterprise-group-nextjs.vercel.app/api/
