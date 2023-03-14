@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Layout from "@/components/Layout/Index"
-import { Button, Form, Input, Select, Switch, Upload } from 'antd'
+import { Button, Checkbox, Form, Input, Modal, Select, Spin, Switch, Upload } from 'antd'
 import { InboxOutlined } from '@ant-design/icons';
-
+import { useGetDepartmentsQuery } from '@/redux/slices/Department';
+import { useGetTopicsQuery } from '@/redux/slices/Topic';
+import { useGetCategoriesQuery } from '@/redux/slices/Category';
+import { useGetTermQuery } from '@/redux/slices/Term';
+import parse from 'html-react-parser';
 const props = {
     name: 'file',
     multiple: true,
@@ -25,6 +29,13 @@ const props = {
 
 
 export default function Idea() {
+    const { data: departments } = useGetDepartmentsQuery()
+    const { data: topics } = useGetTopicsQuery()
+    const { data: categories } = useGetCategoriesQuery()
+    const [selectedDepartment, setSelectedDepartment] = useState(null)
+    const [agree, setAgree] = useState(false)
+    const [modalTerm, setModalTerm] = useState(false)
+    const { data: terms } = useGetTermQuery()
     return (
         <Layout>
             <div style={{ maxWidth: 720, margin: "0 auto" }}>
@@ -36,22 +47,44 @@ export default function Idea() {
                         <Select
                             defaultValue="Please select department"
                             // style={{ width: 250 }}
-                            options={[
-                                { value: 'Department_A', label: 'Department A' },
-                                { value: 'Department_B', label: 'Department B' },
-                                { value: 'Department_C', label: 'Department C' },
-                            ]}
+                            onChange={(dp) => setSelectedDepartment(dp)}
+                            options={
+                                departments?.map(dp => {
+                                    return {
+                                        value: dp.id,
+                                        label: dp.name
+                                    }
+                                })
+
+                            }
                         />
                     </Form.Item>
                     <Form.Item label="Topic" name="topic">
                         <Select
                             defaultValue="Please select topic"
-                            options={[
-                                { value: "Topic_A", label: "Topic A" },
-                                { value: "Topic_B", label: "Topic B" },
-                                { value: "Topic_C", label: "Topic C" },
+                            disabled={!selectedDepartment}
+                            options={
+                                topics?.filter(i => i.Department.id === selectedDepartment).map(tp => {
+                                    return {
+                                        value: tp.id,
+                                        label: tp.name
+                                    }
+                                })
+                            }
+                        />
+                    </Form.Item>
+                    <Form.Item label="Category" name="category">
+                        <Select
+                            defaultValue="Please select category"
+                            options={
+                                categories?.map(ct => {
+                                    return {
+                                        value: ct.id,
+                                        label: ct.name
+                                    }
+                                })
 
-                            ]}
+                            }
                         />
                     </Form.Item>
                     <Form.Item label="Anomyous" name="anomyous">
@@ -79,6 +112,19 @@ export default function Idea() {
                             </p>
                         </Upload.Dragger>
                     </Form.Item>
+                    <div style={{ textAlign: "right", marginBottom: 20 }}>
+                        <Checkbox checked={agree} name="term" onChange={(e) => {
+                            setAgree(e.target.checked)
+                            setModalTerm(e.target.checked)
+                        }}>
+                            I accept the <a>Terms & Conditions</a>
+                        </Checkbox>
+                        <Modal
+                            width={1580} style={{ top: 20 }}
+                            closable={false} open={modalTerm} footer={<Button type="primary" onClick={() => setModalTerm(false)}>Accept</Button>}>
+                            {!terms ? <Spin spinning={!terms} /> : parse(terms?.description)}
+                        </Modal>
+                    </div>
                     <div style={{ textAlign: "right" }}>
                         <Button type='primary'>
                             Submit
