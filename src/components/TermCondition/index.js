@@ -4,12 +4,13 @@ import dynamic from "next/dynamic";
 import { useGetTermQuery, useUpdateTermMutation } from '@/redux/slices/Term';
 
 export default function Index() {
+    const Editor = dynamic(() => import("./Editor"), { ssr: false });
     const { data, isLoading, isSuccess } = useGetTermQuery()
     const [updateTerm, { isLoading: loadingEdit }] = useUpdateTermMutation()
     const editorData = useRef()
-    console.log(data)
-    const Editor = dynamic(() => import("./Editor"), { ssr: false });
+    // console.log(data)
     const handleSubmit = () => {
+        console.log(editorData.current)
         updateTerm({
             description: editorData.current
         }).unwrap().then(res => message.success("Terms and Conditions updated")).catch(err => {
@@ -26,9 +27,11 @@ export default function Index() {
     return (
         <div>
             <div style={{ textAlign: "right", marginBottom: 30 }}>
-                <Button type='primary' onClick={handleSubmit}>SAVE CHANGES</Button>
+                <Button type='primary'
+                    onClick={handleSubmit}
+                >SAVE CHANGES</Button>
             </div>
-            <Spin spinning={isLoading || loadingEdit}>
+            <Spin spinning={loadingEdit || isLoading}>
                 <Editor
                     value={data?.description}
                     onChange={(v) => {

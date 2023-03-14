@@ -10,7 +10,7 @@ const extendedApi = indexApi.injectEndpoints({
             providesTags: ["Term"]
         }),
         updateTerm: build.mutation({
-            query: (data) => ({
+            query: (data) => ({ //{description: "abs"}
                 url: `term`,
                 method: "PUT",
                 body: data

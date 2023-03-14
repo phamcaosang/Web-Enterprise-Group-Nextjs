@@ -4,6 +4,7 @@ import { Tabs } from 'antd'
 import TermCondition from "../components/TermCondition"
 import Department from "../components/Department"
 import { Categories } from '@/components/Category'
+import TopicIdea from '@/components/TopicIdea'
 
 export default function Amin() {
     const items = [
@@ -20,7 +21,7 @@ export default function Amin() {
         {
             key: '3',
             label: `TOPICS & IDEAS`,
-            children: `Content of Tab Pane 3`,
+            children: <TopicIdea />,
         },
         {
             key: '7',

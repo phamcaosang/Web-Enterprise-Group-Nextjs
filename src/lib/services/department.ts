@@ -14,22 +14,6 @@ export const getAllDepartment = async () => {
 }
 
 
-// export const getDepartmentByID = async (id) => {
-//     return await prisma.department.findFirst({
-//         where: {
-//             id: id
-//         }
-//     })
-// }
-
-// export const getDepartmentByName = async (name) => {
-//     return await prisma.department.findFirst({
-//         where: {
-//             name: name
-//         }
-//     })
-// }
-
 export const addDepartment = async ({ name, status }) => {
     return await prisma.department.create({
         data: {
