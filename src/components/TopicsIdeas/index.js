@@ -14,7 +14,6 @@ import {
 import React, { useState, useEffect } from "react";
 import { validateMessages } from "../../..//utils/requireMessage";
 import dayjs from "dayjs";
-import { parseDate } from "../../../utils/parseDate";
 import locale from "antd/lib/date-picker/locale/vi_VN";
 import moment from "moment";
 import {
@@ -120,13 +119,6 @@ export default function Index() {
   };
 
   const handleFinish = (values) => {
-    // console.log(values)
-    // console.log({
-    //     ...values,
-    //     openDate: values.dateIdea[0].$d,
-    //     closureDateIdea: values.dateIdea[1].$d,
-    //     closureDateTopic: values.closureDateTopic.$d
-    // })
     addTopic({
       ...values,
       openDate: values.dateIdea[0].$d,
@@ -135,7 +127,6 @@ export default function Index() {
     })
       .unwrap()
       .then((res) => {
-        //sau thi them thanh cong
         message.success("Add new Topic successfully");
         form.resetFields();
         setIsOpenForm(false);
@@ -218,7 +209,7 @@ export default function Index() {
             name="dateIdea"
             rules={[{ required: true }]}
           >
-            <DatePicker.RangePicker />
+            <DatePicker.RangePicker format={"DD MMM, YYYY"} />
           </Form.Item>
         </Form>
       </Modal>
