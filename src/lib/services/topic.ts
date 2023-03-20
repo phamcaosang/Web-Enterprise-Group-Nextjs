@@ -5,7 +5,9 @@ export const getAllTopic = async () => {
         select: {
             id: true,
             name: true,
-            openDate: true, closureDateIdea: true, closureDateTopic: true,
+            openDate: true,
+            closureDateIdea: true,
+            closureDateTopic: true,
             Department: {
                 select: {
                     id: true,

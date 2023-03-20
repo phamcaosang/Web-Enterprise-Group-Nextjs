@@ -121,7 +121,11 @@ export default function Idea() {
                         </Checkbox>
                         <Modal
                             width={1580} style={{ top: 20 }}
-                            closable={false} open={modalTerm} footer={<Button type="primary" onClick={() => setModalTerm(false)}>Accept</Button>}>
+                            closable={false} open={modalTerm}
+                            footer={
+                                <Button type="primary" key="1" onClick={() => setModalTerm(false)}>Accept</Button>
+                            }
+                        >
                             {!terms ? <Spin spinning={!terms} /> : parse(terms?.description)}
                         </Modal>
                     </div>

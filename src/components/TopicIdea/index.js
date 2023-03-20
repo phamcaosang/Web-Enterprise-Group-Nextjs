@@ -6,6 +6,7 @@ import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import locale from "antd/lib/date-picker/locale/vi_VN";
 import dayjs from 'dayjs'
+import IdeaByTopic from './IdeaByTopic'
 
 export default function Index() {
     const { data, isLoading } = useGetTopicsQuery()
@@ -113,7 +114,13 @@ export default function Index() {
             </div>
             <Divider><span style={{ fontSize: 28 }}>TABLE OF TOPICS & IDEAS</span></Divider>
             <Spin spinning={isLoadingDelete}>
-                <Table dataSource={data} columns={columns} pagination={{ pageSize: 10 }} isLoading={isLoading} />
+                <Table
+                    rowKey={(record) => record.id}
+                    expandable={{
+                        expandedRowRender: record => <IdeaByTopic topic={record} />,
+                        defaultExpandedRowKeys: ['0'],
+                    }}
+                    dataSource={data} columns={columns} pagination={{ pageSize: 10 }} isLoading={isLoading} />
             </Spin>
             <Modal title="ADD TOPIC"
                 closable={false}
@@ -142,10 +149,10 @@ export default function Index() {
                         />
                     </Form.Item>
                     <Form.Item label="Close Topic Date" name="closureDateTopic" rules={[{ required: true }]}>
-                        <DatePicker locale={locale} format={'DD MMM, YYYY'} />
+                        <DatePicker format={'DD/MM/YYYY'} />
                     </Form.Item>
                     <Form.Item label="Date Idea Range" name="dateIdea" rules={[{ required: true }]}>
-                        <DatePicker.RangePicker />
+                        <DatePicker.RangePicker format={'DD-MM-YYYY'} />
                     </Form.Item>
                 </Form>
             </Modal>
@@ -181,7 +188,7 @@ const EditModal = ({ isOpenEdit, setIsOpenEdit, dataEdit, setDataEdit }) => {
         form.setFieldsValue({
             ...dataEdit,
             department: dataEdit?.Department.id,
-            closureDateTopic: dayjs(dataEdit?.closureDateTopic, 'YYYY-MM-DD'),
+            closureDateTopic: dayjs(dataEdit?.closureDateTopic, 'YYYY-MM-DD'), //Tại vì dữ liệu từ BE trả về YYYY-MM-DD => cần khai báo để tạo ngày phù hợp
             dateIdea: [dayjs(dataEdit?.openDate, 'YYYY-MM-DD'), dayjs(dataEdit?.closureDateIdea, 'YYYY-MM-DD')],
         })
     }, [dataEdit?.id])

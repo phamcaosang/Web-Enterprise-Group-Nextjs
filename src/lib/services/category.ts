@@ -8,7 +8,7 @@ export const addCategory = async ({ name }) => {
     })
 }
 
-export const editCategory = async (id, { name }) => {
+export const editCategory = async (id, name) => {
     return await prisma.category.update({
         where: {
             id: id
