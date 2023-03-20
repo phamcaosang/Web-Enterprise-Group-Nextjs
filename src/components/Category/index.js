@@ -7,10 +7,12 @@ import {
   Table,
   Tag,
   message,
+  Descriptions,
   Spin,
 } from "antd";
 import React, { useState, useEffect } from "react";
 import { validateMessages } from "../../../utils/requireMessage";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { parseDate } from "../../../utils/parseDate";
 import {
   useAddCategoryMutation,
@@ -19,205 +21,273 @@ import {
   useGetCategoriesQuery,
 } from "../../../redux/Slices/Category";
 
-export default function Index() {
-  const { data } = useGetCategoriesQuery();
-  const [addCategory, { isLoading }] = useAddCategoryMutation();
-  const [deleteCategory, { isLoading: isLoadingCategory }] =
-    useDeleteCategoryMutation();
-  const [isModalEdit, setIsModalEdit] = useState(false);
-  const [dataEdit, setDataEdit] = useState(null);
+const ModalEdit = ({
+  isModalOpen,
+  setIsModalOpen,
+  dataView,
+  setDataView,
+  categories,
+}) => {
+  const [updateCategoryById, { isLoading }] = useEditCategoryMutation();
   const [form] = Form.useForm();
-  const [isOpenForm, setIsOpenForm] = useState(false);
-  const handleDelete = (id) => {
-    console.log(id);
-    deleteCategory(id)
+  const handleSubmit = (values) => {
+    if (categories?.map((i) => i.name).includes(values.name)) {
+      return message.error("Category Existed");
+    }
+    updateCategoryById({ ...values, id: dataView.id })
       .unwrap()
       .then((res) => {
-        message.success("Category deleted");
+        form.resetFields();
+        setIsModalOpen(false);
+        setDataView(null);
+        message.success("Category Updated");
       })
-      .catch((err) => {
-        message.error("Failed to delete Category");
+      .catch((res) => {
+        console.log(res.data);
+        message.error(res.data.message);
       });
   };
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      width: "40%",
-    },
-    {
-      title: "Created Date",
-      dataIndex: "createdDate",
-      width: "20%",
-      render: (value) => {
-        return <>{parseDate(value)}</>;
-      },
-    },
-    {
-      title: "Updated Date",
-      dataIndex: "updatedDate",
-      width: "20%",
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      width: "20%",
-      render: (value, record) => {
-        return (
-          <a>
-            <Tag
-              color="cyan"
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                setDataEdit(record);
-                setIsModalEdit(true);
-              }}
-            >
-              Edit
-            </Tag>
-            <Tag
-              color="red"
-              style={{ cursor: "pointer" }}
-              onClick={() => handleDelete(record.id)}
-            >
-              Delete
-            </Tag>
-          </a>
-        );
-      },
-    },
-  ];
-  const handleFinish = (values) => {
+  useEffect(() => {
+    form.setFieldsValue({
+      ...dataView,
+    });
+  }, [dataView]);
+
+  return (
+    <Modal
+      title="EDIT CATEGORY"
+      open={isModalOpen}
+      onCancel={() => setIsModalOpen(false)}
+      width={600}
+      footer={[
+        <Button key="Close" onClick={() => setIsModalOpen(false)}>
+          Close
+        </Button>,
+        <Button
+          key="Save"
+          type="primary"
+          onClick={() => form.submit()}
+          loading={isLoading}
+        >
+          Save Changes
+        </Button>,
+      ]}
+    >
+      <Form
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 20 }}
+        form={form}
+        onFinish={handleSubmit}
+        validateMessages={validateMessages}
+      >
+        <Form.Item
+          label="Name"
+          name="name"
+          colon={false}
+          rules={[{ required: true }]}
+        >
+          <Input type="text" />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
+
+const AddModal = ({ categories }) => {
+  const [addCategory, { isLoading }] = useAddCategoryMutation();
+  const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleSubmit = (values) => {
+    if (categories?.map((i) => i.name).includes(values.name)) {
+      return message.error("Category Existed");
+    }
     addCategory(values)
       .unwrap()
       .then((res) => {
-        message.success("Category added");
+        console.log(res);
         form.resetFields();
+        setIsModalOpen(false);
+        message.success("Category Added");
       })
-      .catch((err) => {
-        console.log(err);
-        message.error("Failed to add category");
+      .catch((res) => {
+        console.log(res.data);
+        message.error(res.data.message);
       });
-    setIsOpenForm(false);
-    console.log(values);
   };
   return (
-    <div>
-      <div style={{ textAlign: "right", marginBottom: 20 }}>
-        <Button type="primary" onClick={() => setIsOpenForm(true)}>
-          ADD NEW
-        </Button>
-      </div>
-      <Divider>
-        <span style={{ fontSize: 32 }}>TABLE OF CATEGORY</span>
-      </Divider>
-      <Spin spinning={isLoadingCategory}>
-        <Table
-          dataSource={data}
-          columns={columns}
-          loading={isLoading}
-          pagination={{ pageSize: 10 }}
-        ></Table>
-      </Spin>
+    <div style={{ textAlign: "right", margin: "20px 0 10px 0" }}>
+      <Button type="primary" size="large" onClick={() => setIsModalOpen(true)}>
+        ADD NEW
+      </Button>
       <Modal
         title="ADD CATEGORY"
-        width={700}
-        open={isOpenForm}
-        closable={false}
+        open={isModalOpen}
+        onCancel={() => {
+          form.resetFields();
+          setIsModalOpen(false);
+        }}
+        width={600}
         footer={[
-          <Button key="close" onClick={() => setIsOpenForm(false)}>
+          <Button
+            key="Close"
+            onClick={() => {
+              form.resetFields();
+              setIsModalOpen(false);
+            }}
+          >
             Close
           </Button>,
-          <Button key="add" type="primary" onClick={() => form.submit()}>
-            Save Changes
+          <Button
+            key="Save"
+            type="primary"
+            onClick={() => form.submit()}
+            loading={isLoading}
+          >
+            Add New
           </Button>,
         ]}
       >
         <Form
-          validateMessages={validateMessages}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
           form={form}
-          onFinish={handleFinish}
+          validateMessages={validateMessages}
+          onFinish={handleSubmit}
         >
-          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-            <Input />
+          <Form.Item
+            label="Name"
+            name="name"
+            colon={false}
+            rules={[{ required: true }]}
+          >
+            <Input
+              type="text"
+              onChange={(e) =>
+                form.setFieldValue("name", e.target.value.toUpperCase())
+              }
+            />
           </Form.Item>
         </Form>
       </Modal>
-      {dataEdit && (
-        <ModalEditCategory
-          setIsModalEdit={setIsModalEdit}
-          isModalEdit={isModalEdit}
-          dataEdit={dataEdit}
-          setDataEdit={setDataEdit}
-        />
-      )}
     </div>
   );
-}
+};
+const ConfirmDelete = ({ id, name }, deleteCategory) => {
+  console.log(id);
+  Modal.confirm({
+    title: "Do you Want to delete this item ?",
+    icon: <ExclamationCircleFilled />,
+    content: (
+      <>
+        <Descriptions column={1}>
+          <Descriptions.Item label="name">{name}</Descriptions.Item>
+        </Descriptions>
+      </>
+    ),
+    onOk() {
+      deleteCategory(id)
+        .unwrap()
+        .then((res) => message.success("Category Deleted"))
+        .catch((err) => {
+          console.log(err);
+          message.error("Failed To Delete This!");
+        });
+    },
+    onCancel() {
+      console.log("Cancel");
+    },
+  });
+};
 
-function ModalEditCategory({
-  setIsModalEdit,
-  isModalEdit,
-  dataEdit,
-  setDataEdit,
-}) {
-  const [form] = Form.useForm();
-  const [editCategory, { isLoading }] = useEditCategoryMutation();
-
-  useEffect(() => {
-    if (dataEdit) {
-      form.setFieldsValue({
-        ...dataEdit,
-      });
-    }
-  }, [JSON.stringify(dataEdit)]);
-  const handleFinish = (values) => {
-    console.log(values);
-    editCategory({
-      ...values,
-      id: dataEdit?.id,
-    })
-      .unwrap()
-      .then((res) => {
-        message.success("Category edited");
-        form.resetFields();
-        setDataEdit(null);
-        setIsModalEdit(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        message.error("Failed to edit Category");
-      });
+export default function Index() {
+  const { data, isloading } = useGetCategoriesQuery();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteCategoryById, { isLoading: loadingDelete }] =
+    useDeleteCategoryMutation();
+  const [dataView, setDataView] = useState(null);
+  const Columns = (setDataView, setIsModalOpen) => {
+    return [
+      {
+        title: "Name",
+        dataIndex: "name",
+        key: "name",
+        width: "40%",
+      },
+      {
+        title: "Created At",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        width: "20%",
+        render: (value) => {
+          return <>{parseDate(value)}</>;
+        },
+      },
+      {
+        title: "Updated At",
+        dataIndex: "updatedAt",
+        key: "updatedAt",
+        width: "20%",
+        render: (value) => {
+          return <>{parseDate(value)}</>;
+        },
+      },
+      {
+        title: "Action",
+        dataIndex: "action",
+        key: "action",
+        width: "10%",
+        render: (value, record) => {
+          return (
+            <div style={{ textAlign: "center" }}>
+              <Tag
+                color="cyan"
+                style={{ cursor: "pointer", padding: "5px 10px" }}
+                onClick={() => {
+                  setDataView(record);
+                  setIsModalOpen(true);
+                }}
+              >
+                EDIT
+              </Tag>
+              <Tag
+                color="red"
+                style={{ cursor: "pointer", padding: "5px 10px" }}
+                onClick={() => ConfirmDelete(record, deleteCategoryById)}
+              >
+                Delete
+              </Tag>
+            </div>
+          );
+        },
+      },
+    ];
   };
+
   return (
-    <Modal
-      title="CATEGORY"
-      closable={false}
-      onOk={() => {
-        form.submit();
-      }}
-      onCancel={() => {
-        setDataEdit(null);
-        setIsModalEdit(false);
-      }}
-      open={isModalEdit}
-    >
-      <Spin spinning={isLoading}>
-        <Form
-          style={{ width: 400, margin: "0 auto" }}
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 19 }}
-          form={form}
-          onFinish={handleFinish}
-          validateMessages={validateMessages}
-        >
-          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Form>
+    <div>
+      <AddModal categories={data} />
+      <Spin spinning={loadingDelete}>
+        <Table
+          loading={isloading}
+          dataSource={data || []}
+          columns={Columns(setDataView, setIsModalOpen)}
+          bordered
+          pagination={{ pageSize: 5 }}
+          title={() => (
+            <Divider>
+              <h2 style={{ textAlign: "center" }}>TABLE OF CATEGORIES</h2>
+            </Divider>
+          )}
+        />
       </Spin>
-    </Modal>
+
+      <ModalEdit
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        dataView={dataView}
+        setDataView={setDataView}
+        categories={data?.filter((i) => i.id !== dataView?.id)}
+      />
+    </div>
   );
 }

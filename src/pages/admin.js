@@ -4,6 +4,7 @@ import { Tabs } from "antd";
 import TermCondition from "../components/TermCondition";
 import Department from "../components/Department";
 import Category from "../components/Category";
+import TopicsIdeas from "../components/TopicsIdeas";
 
 export default function Admin() {
   const items = [
@@ -20,7 +21,7 @@ export default function Admin() {
     {
       key: "3",
       label: `TOPIC & IDEA`,
-      children: `Content of Tab Pane 2`,
+      children: <TopicsIdeas />,
     },
     {
       key: "4",

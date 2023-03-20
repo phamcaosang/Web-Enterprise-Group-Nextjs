@@ -7,5 +7,5 @@ export const apiIndex = createApi({
     baseUrl: "https://web-enterprise-group-nextjs.vercel.app/api",
   }),
   endpoints: () => ({}),
-  tagTypes: ["Department", "Category", "Term"],
+  tagTypes: ["Department", "Category", "Term", "Topic"],
 });

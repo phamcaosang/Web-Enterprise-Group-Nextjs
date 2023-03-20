@@ -9,10 +9,12 @@ import {
   Tag,
   message,
   Spin,
+  DatePicker,
 } from "antd";
 import React, { useState, useEffect } from "react";
 import { validateMessages } from "../../..//utils/requireMessage";
 import { parseDate } from "../../../utils/parseDate";
+import moment from "moment";
 import {
   useAddDepartmentMutation,
   useDeleteDepartmentMutation,
@@ -47,17 +49,20 @@ export default function Index() {
       width: "35%",
     },
     {
-      title: "Created Date",
-      dataIndex: "createdDate",
+      title: "Create Date",
+      dataIndex: "created_at",
       width: "15%",
       render: (value) => {
-        return <>{parseDate(value)}</>;
+        return moment(value).format("DD/MM/YYYY HH:MM:SS");
       },
     },
     {
-      title: "Updated Date",
-      dataIndex: "updatedDate",
+      title: "Update Date",
+      dataIndex: "updated_at",
       width: "15%",
+      render: (value) => {
+        return moment(value).format("DD/MM/YYYY HH:MM:SS");
+      },
     },
     {
       title: "Status",

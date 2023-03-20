@@ -1,7 +1,7 @@
 import { Button, Divider, Form, Input, Table, Tag } from "antd";
 import React from "react";
 import dynamic from "next/dynamic";
-import validateMessages from "@/utils/requireMessage";
+import validateMessages from "../../../utils/requireMessage";
 
 export default function Index() {
   const Editor = dynamic(() => import("./Editor"), { ssr: false });

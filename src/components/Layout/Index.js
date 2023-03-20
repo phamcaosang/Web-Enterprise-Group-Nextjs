@@ -62,6 +62,7 @@ function getItem(label, key, icon, children, type) {
 
 export default function Index({ children }) {
   const { data } = useGetDepartmentsQuery();
+  const { data: department } = useGetDepartmentsQuery();
   console.log(data);
   const router = useRouter();
   const items = [
@@ -77,7 +78,14 @@ export default function Index({ children }) {
       children: [
         {
           label: (
-            <span onClick={() => router.push("/department")}>{data?.name}</span>
+            <span onClick={() => router.push("/department")}>
+              {/* {department?.map(({ id, name }) => {
+                return {
+                  value: id,
+                  label: name,
+                };
+              })} */}
+            </span>
           ),
         },
       ],
