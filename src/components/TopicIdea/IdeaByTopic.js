@@ -3,10 +3,11 @@ import { Dropdown, Space, Table } from 'antd';
 import React from 'react'
 
 export default function IdeaByTopic({ topic }) {
-    const { data: ideas } = useGetIdeasQuery(undefined, {
-        selectFromResult: ({ data }) => {
+    const { data: ideas, isLoading } = useGetIdeasQuery(undefined, {
+        selectFromResult: ({ data, isLoading }) => {
             return {
-                data: data?.filter(idea => idea?.Topic.id === topic.id)
+                data: data?.filter(idea => idea?.Topic.id === topic.id),
+                isLoading
             }
         }
     })
@@ -44,5 +45,5 @@ export default function IdeaByTopic({ topic }) {
 
     ];
     const data = [];
-    return <Table columns={columns} dataSource={ideas} pagination={false} />;
+    return <Table columns={columns} dataSource={ideas} pagination={false} loading={isLoading} />;
 };
