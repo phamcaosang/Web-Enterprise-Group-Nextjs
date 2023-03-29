@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     try {
         if (req.method === "POST") {
             const { id, category, content, isAnomyous, topic, user } = req.body
+            
             return res.status(200).json(await prisma.idea.create({
                 data: {
                     id,

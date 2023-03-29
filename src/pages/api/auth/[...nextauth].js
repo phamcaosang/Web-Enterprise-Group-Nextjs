@@ -19,6 +19,7 @@ export const authOptions = {
         }),
         // ...add more providers here
     ],
+    secret: process.env.NEXT_PUBLIC_SECRET,
     session: {
         maxAge: 24 * 60 * 60, // 24 days
         updateAge: 24 * 60 * 60, // 24 hours

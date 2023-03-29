@@ -32,7 +32,7 @@ const props = {
 
 
 export default function Idea() {
-    const { data: session, status } = useSession()
+    const { data: session } = useSession()
     const { data: departments } = useGetDepartmentsQuery()
     const { data: topics } = useGetTopicsQuery()
     const { data: categories } = useGetCategoriesQuery()
@@ -44,11 +44,11 @@ export default function Idea() {
     const [addIdea, { isLoading: loadingAdd }] = useAddIdeaMutation()
     const handleFinish = ({ content, isAnomyous, category, topic }) => {
         const dataSubmit = {
-            id: Date.now().toString(),
-            content,
-            isAnomyous: !!isAnomyous,
-            category,
-            topic,
+            id: Date.now().toString(), // Cần lấy time hiện tại
+            content, //
+            isAnomyous: !!isAnomyous, //
+            category, //
+            topic, //
             user: session.user
         }
         console.log(dataSubmit)

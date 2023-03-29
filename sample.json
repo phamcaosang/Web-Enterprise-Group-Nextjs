@@ -1,0 +1,56 @@
+[
+    {
+        "id": "1680101224803",
+        "status": 1,
+        "Category": {
+            "id": "clffgkjok0002mr08dh9eyxlv",
+            "name": "DEPARTMENT D"
+        },
+        "Topic": {
+            "id": "clfts83v60001g4h43misrfj0",
+            "name": "Topic 2"
+        },
+        "isAnomyous": true,
+        "content": "knlknln",
+        "User": {
+            "name": "pham sang",
+            "email": "phamcaosang135@gmail.com"
+        }
+    },
+    {
+        "id": "1680102710868",
+        "status": 1,
+        "Category": {
+            "id": "clffgkjok0002mr08dh9eyxlv",
+            "name": "DEPARTMENT D"
+        },
+        "Topic": {
+            "id": "clfts83v60001g4h43misrfj0",
+            "name": "Topic 2"
+        },
+        "isAnomyous": true,
+        "content": "fsdfsdfds",
+        "User": {
+            "name": "pham sang",
+            "email": "phamcaosang135@gmail.com"
+        }
+    },
+    {
+        "id": "1680103033285",
+        "status": 1,
+        "Category": {
+            "id": "cletl6h7c0000lc08fg309tna",
+            "name": "DEPARTMENT B"
+        },
+        "Topic": {
+            "id": "clfts83v60001g4h43misrfj0",
+            "name": "Topic 2"
+        },
+        "isAnomyous": false,
+        "content": "TTTTTTTTTTTTTTTTTTTTTTT",
+        "User": {
+            "name": "pham sang",
+            "email": "phamcaosang135@gmail.com"
+        }
+    }
+]

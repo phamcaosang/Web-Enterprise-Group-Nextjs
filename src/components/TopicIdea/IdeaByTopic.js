@@ -3,6 +3,8 @@ import { Dropdown, Space, Table } from 'antd';
 import React from 'react'
 
 export default function IdeaByTopic({ topic }) {
+
+
     const { data: ideas, isLoading } = useGetIdeasQuery(undefined, {
         selectFromResult: ({ data, isLoading }) => {
             return {
@@ -11,7 +13,6 @@ export default function IdeaByTopic({ topic }) {
             }
         }
     })
-    console.log(topic)
     const columns = [
         {
             title: 'Content',
