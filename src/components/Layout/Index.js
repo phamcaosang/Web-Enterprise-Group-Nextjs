@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Avatar, Button, Divider, Drawer, Form, Input, Menu, Space } from "antd"
 // import { MailOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { BiHomeAlt } from "react-icons/bi"
@@ -7,6 +7,9 @@ import { GrGroup } from "react-icons/gr"
 import { GoLaw } from "react-icons/go"
 import Link from 'next/link'
 import { useGetDepartmentsQuery } from '@/redux/slices/Department'
+import { useSession, signOut } from "next-auth/react"
+import { useRouter } from 'next/router'
+
 
 const sampleActivities = [
     "You liked the comment lorem is pul.",
@@ -23,6 +26,8 @@ const sampleActivities = [
 
 export default function Layout({ children }) {
     const { data: departments } = useGetDepartmentsQuery()
+    const { data: session, status } = useSession()
+    const [avatar, setAvatar] = useState(null)
     const items = [
         {
             key: 1,
@@ -102,6 +107,27 @@ export default function Layout({ children }) {
         setOpen(true);
 
     }
+
+
+    const [form] = Form.useForm()
+    const router = useRouter()
+
+    useEffect(() => {
+        console.log(status)
+        if (session) {
+            console.log(session)
+            form.setFieldsValue({
+                "name": session.user.name,
+                "email": session.user.email
+            })
+            setAvatar(session.user.image)
+        }
+        if (status === "unauthenticated") {
+            router.push("/login")
+        }
+
+    }, [session, status])
+
     return (
         <div>
             <header style={{ maxWidth: 1580, margin: "0 auto", display: "flex", justifyContent: "space-between" }}>
@@ -123,7 +149,11 @@ export default function Layout({ children }) {
                     extra={
                         <Space>
                             <Button onClick={onClose}>Cancel</Button>
-                            <Button onClick={onClose} danger>
+                            <Button onClick={() => {
+                                signOut();
+                                setOpen(false);
+
+                            }} danger>
                                 Logout
                             </Button>
                             <Button onClick={onClose} type="primary">
@@ -132,18 +162,19 @@ export default function Layout({ children }) {
                         </Space>
                     }
                 >
-                    <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-                        <Form.Item label="Email" colon={false}>
+                    <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} form={form}>
+                        <Form.Item label="Email" colon={false} name="email">
                             <Input disabled />
                         </Form.Item>
-                        <Form.Item label="Department" colon={false}>
+                        {/* <Form.Item label="Department" colon={false}>
                             <Input disabled />
-                        </Form.Item>
-                        <Form.Item label="Username" colon={false}>
+                        </Form.Item> */}
+                        <Form.Item label="Username" colon={false} name="name">
                             <Input />
                         </Form.Item>
                         <Form.Item label="Avatar" colon={false}>
-                            <Input type='file' />
+                            {/* <Input type='file' /> */}
+                            <img src={avatar} style={{ width: 50, height: 50, borderRadius: "100%", objectFit: "cover" }} alt="avatar" />
                         </Form.Item>
 
                     </Form>

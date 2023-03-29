@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
 import Layout from "@/components/Layout/Index"
-import { Button, Checkbox, Form, Input, Modal, Select, Spin, Switch, Upload } from 'antd'
+import { Button, Checkbox, Form, Input, message, Modal, Select, Spin, Switch, Upload } from 'antd'
 import { InboxOutlined } from '@ant-design/icons';
 import { useGetDepartmentsQuery } from '@/redux/slices/Department';
 import { useGetTopicsQuery } from '@/redux/slices/Topic';
 import { useGetCategoriesQuery } from '@/redux/slices/Category';
 import { useGetTermQuery } from '@/redux/slices/Term';
 import parse from 'html-react-parser';
+import { useSession } from 'next-auth/react';
+import { validateMessages } from '@/utils/requireMessage';
+import { useAddIdeaMutation } from '@/redux/slices/Idea';
 const props = {
     name: 'file',
     multiple: true,
@@ -29,6 +32,7 @@ const props = {
 
 
 export default function Idea() {
+    const { data: session, status } = useSession()
     const { data: departments } = useGetDepartmentsQuery()
     const { data: topics } = useGetTopicsQuery()
     const { data: categories } = useGetCategoriesQuery()
@@ -36,13 +40,35 @@ export default function Idea() {
     const [agree, setAgree] = useState(false)
     const [modalTerm, setModalTerm] = useState(false)
     const { data: terms } = useGetTermQuery()
+    const [form] = Form.useForm()
+    const [addIdea, { isLoading: loadingAdd }] = useAddIdeaMutation()
+    const handleFinish = ({ content, isAnomyous, category, topic }) => {
+        const dataSubmit = {
+            id: Date.now().toString(),
+            content,
+            isAnomyous: !!isAnomyous,
+            category,
+            topic,
+            user: session.user
+        }
+        console.log(dataSubmit)
+        addIdea(dataSubmit).unwrap().then(res => {
+            message.success("Idea submited")
+            form.resetFields()
+        }).catch(err => {
+            console.log(err)
+            message.error("Failed to submit")
+        })
+
+
+    }
     return (
         <Layout>
             <div style={{ maxWidth: 720, margin: "0 auto" }}>
                 <h3 style={{ textAlign: "center" }}>
                     IDEA SUBMISSION
                 </h3>
-                <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+                <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} onFinish={handleFinish} form={form} validateMessages={validateMessages}>
                     <Form.Item label="Deparment" name="department">
                         <Select
                             defaultValue="Please select department"
@@ -59,7 +85,7 @@ export default function Idea() {
                             }
                         />
                     </Form.Item>
-                    <Form.Item label="Topic" name="topic">
+                    <Form.Item label="Topic" name="topic" rules={[{ required: true }]}>
                         <Select
                             defaultValue="Please select topic"
                             disabled={!selectedDepartment}
@@ -73,7 +99,7 @@ export default function Idea() {
                             }
                         />
                     </Form.Item>
-                    <Form.Item label="Category" name="category">
+                    <Form.Item label="Category" name="category" rules={[{ required: true }]}>
                         <Select
                             defaultValue="Please select category"
                             options={
@@ -87,10 +113,10 @@ export default function Idea() {
                             }
                         />
                     </Form.Item>
-                    <Form.Item label="Anomyous" name="anomyous">
+                    <Form.Item label="Anomyous" name="isAnomyous">
                         <Switch />
                     </Form.Item>
-                    <Form.Item label="Idea" name="idea">
+                    <Form.Item label="Idea" name="content" rules={[{ required: true }]}>
                         <Input.TextArea
                             showCount
                             maxLength={1000}
@@ -130,7 +156,7 @@ export default function Idea() {
                         </Modal>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                        <Button type='primary'>
+                        <Button type='primary' onClick={() => form.submit()} loading={loadingAdd}>
                             Submit
                         </Button>
                     </div>
