@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetDepartmentsQuery } from "../../../redux/Slices/Department";
 import {
   Button,
@@ -18,6 +18,8 @@ import { IoIosPeople } from "react-icons/io";
 import { AiFillDatabase } from "react-icons/ai";
 import { MdOutlinePrivacyTip } from "react-icons/md";
 import { UserOutlined, UploadOutlined } from "@ant-design/icons";
+import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const sampleActivities = [
   "You liked the comment lorem is pul...",
@@ -62,7 +64,9 @@ function getItem(label, key, icon, children, type) {
 
 export default function Index({ children }) {
   const { data } = useGetDepartmentsQuery();
-  const { data: department } = useGetDepartmentsQuery();
+  const { data: session, status } = useSession();
+  const { avatar } = useState(null);
+  const { data: departments } = useGetDepartmentsQuery();
   console.log(data);
   const router = useRouter();
   const items = [
@@ -75,20 +79,12 @@ export default function Index({ children }) {
       key: 2,
       icon: <IoIosPeople />,
       label: <>Department</>,
-      children: [
-        {
-          label: (
-            <span onClick={() => router.push("/department")}>
-              {/* {department?.map(({ id, name }) => {
-                return {
-                  value: id,
-                  label: name,
-                };
-              })} */}
-            </span>
-          ),
-        },
-      ],
+      children: departments?.map((item) => {
+        return {
+          key: item.id,
+          label: <Link href="/department">{item.name}</Link>,
+        };
+      }),
     },
     {
       key: 6,
@@ -140,6 +136,22 @@ export default function Index({ children }) {
   ];
   const [open, setOpen] = useState(false);
 
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (session) {
+      console.log("session: ", session);
+      form.setFieldsValue({
+        name: session.user.name,
+        email: session.user.email,
+        avatar: session.user.image,
+      });
+    }
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [session]);
+
   const showDrawer = () => {
     setOpen(true);
   };
@@ -188,7 +200,12 @@ export default function Index({ children }) {
         extra={
           <Space>
             <Button onClick={onClose}>Cancel</Button>
-            <Button danger onClick={onClose}>
+            <Button
+              danger
+              onClick={() => {
+                signOut(), setOpen(false);
+              }}
+            >
               Logout
             </Button>
             <Button type="primary" onClick={onClose}>
@@ -197,20 +214,30 @@ export default function Index({ children }) {
           </Space>
         }
       >
-        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-          <Form.Item label="Email" colon={false}>
+        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} form={form}>
+          <Form.Item label="Email" colon={false} name="email">
             <Input />
           </Form.Item>
-          <Form.Item label="Department" colon={false}>
+          {/* <Form.Item label="Department" colon={false}>
+            <Input />
+          </Form.Item> */}
+          <Form.Item label="Username" colon={false} name="name">
             <Input />
           </Form.Item>
-          <Form.Item label="Username" colon={false}>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Avatar" colon={false}>
-            <Upload {...props}>
+          <Form.Item label="Avatar" colon={false} name="avatar">
+            {/* <Upload {...props}>
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>
+            </Upload> */}
+            <img
+              src={avatar}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+              alt="avatar"
+            />
           </Form.Item>
         </Form>
         <Divider>Activities</Divider>

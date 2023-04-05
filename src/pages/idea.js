@@ -124,8 +124,12 @@ export default function Idea() {
           <Modal
             title="Basic Modal"
             open={isModalOpen}
-            onOk={handleOk}
             closable={false}
+            footer={[
+              <Button onClick={handleOk} type={"primary"}>
+                OK
+              </Button>,
+            ]}
           >
             {data && parse(data?.description)}
           </Modal>
