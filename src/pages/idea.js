@@ -12,6 +12,9 @@ import {
 } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import { useGetTermsQuery } from "../../redux/Slices/Term";
+import { useGetDepartmentsQuery } from "../../redux/Slices/Department";
+import { useGetTopicsQuery } from "../../redux/Slices/Topic";
+import { useGetCategoriesQuery } from "../../redux/Slices/Category";
 import parse from "html-react-parser";
 
 const { Dragger } = Upload;
@@ -36,7 +39,13 @@ const props = {
 };
 
 export default function Idea() {
-  const { data, isLoading, isSuccess } = useGetTermsQuery();
+  const { data } = useGetTermsQuery();
+  const { data: departments } = useGetDepartmentsQuery();
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const { data: topics } = useGetTopicsQuery();
+  const { data: categories } = useGetCategoriesQuery();
+  const [agree, setAgree] = useState(false);
+  // const [modalTerm, setModalTerm] = useState(false);
   const onChange = (e) => {
     setIsModalOpen(true);
   };
@@ -51,34 +60,46 @@ export default function Idea() {
           IDEA SUBMISSION
         </h2>
         <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-          <Form.Item label="Department" name="department">
+          <Form.Item label="Deparment" name="department">
             <Select
               defaultValue="Please select department"
-              options={[
-                { value: "Department_A", label: "Department A" },
-                { value: "Department_B", label: "Department B" },
-                { value: "Department_C", label: "Department C" },
-              ]}
+              // style={{ width: 250 }}
+              onChange={(dp) => setSelectedDepartment(dp)}
+              options={departments?.map((dp) => {
+                return {
+                  value: dp.id,
+                  label: dp.name,
+                };
+              })}
             />
           </Form.Item>
-          <Form.Item label="Topic" name="topic">
+          <Form.Item label="Topic" name="topic" rules={[{ required: true }]}>
             <Select
               defaultValue="Please select topic"
-              options={[
-                { value: "Topic_A", label: "Topic A" },
-                { value: "Topic_B", label: "Topic B" },
-                { value: "Topic_C", label: "Topic C" },
-              ]}
+              disabled={!selectedDepartment}
+              options={topics
+                ?.filter((i) => i.Department.id === selectedDepartment)
+                .map((tp) => {
+                  return {
+                    value: tp.id,
+                    label: tp.name,
+                  };
+                })}
             />
           </Form.Item>
-          <Form.Item label="Category" name="category">
+          <Form.Item
+            label="Category"
+            name="category"
+            rules={[{ required: true }]}
+          >
             <Select
-              defaultValue="Please select Category"
-              options={[
-                { value: "CATEGORY_AA", label: "CATEGORY AA" },
-                { value: "CATEGORY_BB", label: "CATEGORY BB" },
-                { value: "CATEGORY_CC", label: "CATEGORY CC" },
-              ]}
+              defaultValue="Please select category"
+              options={categories?.map((ct) => {
+                return {
+                  value: ct.id,
+                  label: ct.name,
+                };
+              })}
             />
           </Form.Item>
           <Form.Item label="Anonymous" name="Anonymous">
@@ -111,7 +132,16 @@ export default function Idea() {
               textAlign: "right",
             }}
           >
-            <Checkbox onChange={onChange}>I accept Term & Conditions</Checkbox>
+            <Checkbox
+              checked={agree}
+              name="term"
+              onChange={(e) => {
+                setAgree(e.target.checked);
+                setIsModalOpen(e.target.checked);
+              }}
+            >
+              I accept the <a>Terms & Conditions</a>
+            </Checkbox>
           </div>
           <div
             style={{
