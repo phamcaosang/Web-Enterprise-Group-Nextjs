@@ -1,9 +1,8 @@
 import React from 'react'
-import Layout from "@/components/Layout/Index"
-
+import Layout from '@/component/layout/Index'
 
 export default function Privilege() {
-    return (
-        <Layout>privilege</Layout>
-    )
+  return (
+    <Layout>privilege</Layout>
+  )
 }

@@ -1,5 +1,5 @@
 {
-  "name": "web-enterprise-group",
+  "name": "hi",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,13 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^36.0.1",
+    "@ckeditor/ckeditor5-react": "^5.1.0",
     "@next/font": "13.1.6",
+    "@reduxjs/toolkit": "^1.9.3",
     "antd": "^5.2.1",
     "eslint": "8.34.0",
     "eslint-config-next": "13.1.6",
+    "moment": "^2.29.4",
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.7.1"
+    "react-icons": "^4.7.1",
+    "react-redux": "^8.0.5"
   }
 }
