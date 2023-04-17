@@ -245,7 +245,7 @@ const EditModal = ({ isOpenEdit, setIsOpenEdit, dataEdit, setDataEdit }) => {
       })
       .catch((err) => {
         console.log(err);
-        message.error("failed to update departments");
+        message.error("failed to update department");
       });
   };
   useEffect(() => {
