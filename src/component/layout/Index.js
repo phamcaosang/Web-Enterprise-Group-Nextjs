@@ -1,166 +1,186 @@
-import React, {useState} from 'react'
-import { Avatar, Button, Divider, Drawer, Form, Input, Menu, Space, Upload } from "antd"
+import React, { useEffect, useState } from 'react'
+import { Avatar, Button, Divider, Drawer, Form, Input, Menu, Space } from "antd"
+// import { MailOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { BiHomeAlt } from "react-icons/bi"
 import { FcIdea } from "react-icons/fc"
-import { FcDepartment } from "react-icons/fc"
 import { GrGroup } from "react-icons/gr"
+import { GoLaw } from "react-icons/go"
 import Link from 'next/link'
-import { BsPlus} from "react-icons/bs"
+import { useGetDepartmentsQuery } from '@/redux/slices/Department'
+import { useSession, signOut } from "next-auth/react"
+import { useRouter } from 'next/router'
+
+
+const sampleActivities = [
+    "You liked the comment lorem is pul.",
+    "You disliked the comment lorem is pul.",
+    "You commented the comment lorem is pul.",
+    "You liked the comment lorem is pul.",
+    "You disliked the comment lorem is pul.",
+    "You commented the comment lorem is pul.", "You liked the comment lorem is pul.",
+    "You disliked the comment lorem is pul.",
+    "You commented the comment lorem is pul.",
+
+]
 
 
 export default function Layout({ children }) {
-  
-  const items =[
-    {
-      key : 1,
-      label: <Link href={"/"}>Home</Link>,
-      icon:<BiHomeAlt/>
-    },
-    {
-      key : 2,
-      label: <Link href={"/idea"}>idea</Link>,
-      icon:<FcIdea/>,
-      children: [
+    const { data: departments } = useGetDepartmentsQuery()
+    const { data: session, status } = useSession()
+    const [avatar, setAvatar] = useState(null)
+    const items = [
         {
-          key : 2.1,
-          label: <Link href={"/idea"}>Submit your idea</Link>,
-          icon:<FcIdea/>
+            key: 1,
+            label: <Link href="/">Home</Link>,
+            icon: <BiHomeAlt />
         },
         {
-          key : 2.2,
-          label: <Link href={"/idea"}>your idea</Link>,
-          icon:<></>
-        },
-      ]
-    },
-    {
-      key : 3,
-      label: <Link href={"/"}>Department</Link>,
-      icon:<FcDepartment/>,
-      children: [
-        {
-          key : 3.1,
-          label: <Link href={"/department"}>Department A</Link>,
-          icon:<></>
-        },
-        {
-          key : 3.2,
-          label: <Link href={"/department"}>Department B</Link>,
-          icon:<></>
+            key: 2,
+            label: <>Idea</>,
+            icon: <FcIdea />,
+            children: [
+                {
+                    key: 2.1,
+                    label: <Link href="/idea">Submit your idea</Link>,
+                    icon: <></>
+                },
+                {
+                    key: 2.2,
+                    label: <Link href="/idea">Your past idea</Link>,
+                    icon: <></>
+                },
+            ]
         },
         {
-          key : 3.3,
-          label: <Link href={"/department"}>Department C</Link>,
-          icon:<></>
-        },
-      ]
-    },
-    {
-      key : 4,
-      label: <Link href={"/privilege"}>Privilege</Link>,
-      icon:<GrGroup/>,
-      children: [
-        {
-          key : 3.1,
-          label: <Link href={"/admin"}>Admin</Link>,
-          icon:<></>
+            key: 3,
+            label: <>Department</>,
+            icon: <GrGroup />,
+            children: departments?.map(item => {
+                return {
+                    key: item.id,
+                    label: <Link href="/department">{item.name}</Link>
+                }
+            })
         },
         {
-          key : 3.2,
-          label: <Link href={"/department"}>Head/Manager </Link>,
-          icon:<></>
+            key: 4,
+            label: <Link href="/privilege">Privilege</Link>,
+            icon: <GoLaw />,
+            children: [
+                {
+                    key: 3.1,
+                    label: <Link href="/admin">Admin</Link>,
+                },
+                {
+                    key: 3.2,
+                    label: <Link href="/department">Head/Manager</Link>,
+                },
+                {
+                    key: 3.3,
+                    label: <Link href="/department">Coordinator</Link>,
+                },
+            ]
         },
-        {
-          key : 3.3,
-          label: <Link href={"/department"}>Coordinator </Link>,
-          icon:<></>
-        },
-      ]
-    },
-  ]
+    ]
 
     const [open, setOpen] = useState(false);
-  
-    const openDrawer = () => {
-      setOpen(true);
-    };
 
     const onClose = () => {
-      setOpen(false);
+        setOpen(false);
     };
-    
-  const sampleActivities =[
-    "You just like a post",
-    "You just dislike a post",
-    "You just comment a post",
-    "You just dislike a post",
-    "You just comment a post",
-    "You just like a post",
-    "You just like a post",
-    "You just like a post",
 
-  ]
+    const openDrawer = () => {
+        setOpen(true);
+
+    }
 
 
-  return (
-    <div>
-        {/* Navbar */}
-        <header style={{maxWidth:1580, margin:" 0 auto", display: 'flex',justifyContent:"space-between"}}>
-          <section style={{display:'flex'}}>       
-            <img src='https://ap.greenwich.edu.vn/FGW_logo_d.jpg' style={{height: 50}} />
-            {/* Menu */}
-            <Menu
-              mode="horizontal"
-              items={ items }
-            />
-          </section>
+    const [form] = Form.useForm()
+    const router = useRouter()
 
-          <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" style={{cursor:'pointer'}} onClick = {openDrawer}/>
+    useEffect(() => {
+        console.log(status)
+        if (session) {
+            console.log(session)
+            form.setFieldsValue({
+                "name": session.user.name,
+                "email": session.user.email
+            })
+            setAvatar(session.user.image)
+        }
+        if (status === "unauthenticated") {
+            router.push("/login")
+        }
 
-          <Drawer title="" placement="right" onClose={onClose} open={open}
-            extra={
-              <Space>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button onClick={onClose} type="primary">Log out</Button>
-                <Button onClick={onClose} danger>Changes</Button>
-              </Space>
-              }
-            >
-            <Form labelCol={{span: 6}} wrapperCol={{span: 18}}> 
-                <Form.Item label="Email" colon ={false}>
-                  <Input disabled/>
-                </Form.Item>              
-                <Form.Item label="Department"colon ={false}>
-                  <Input disabled/>
-                </Form.Item>
-                <Form.Item label="UserName"colon ={false}>
-                  <Input/>
-                </Form.Item>
-                <Form.Item label="Avatar"colon ={false}>
-                <Upload action="/upload.do" listType="picture-card">
-                    <div style={{display:'flex'}}>
-                      <BsPlus/>
-                      <div>Upload</div>
-                    </div>
-                  </Upload>
-                </Form.Item>
-            </Form>
-            <Divider><span style={{ fontSize:18}}>Activities</span></Divider>
-            {
-              sampleActivities.map(i => {
-                return <div key={i}>
-                  <a>{i}</a>
-                  <Divider/>
-                </div>
-              })
-            }
+    }, [session, status])
+
+    return (
+        <div>
+            <header style={{ maxWidth: 1580, margin: "0 auto", display: "flex", justifyContent: "space-between" }}>
+                <section style={{ display: "flex" }}>
+                    <img src='https://www.gre.ac.uk/__data/assets/image/0035/265688/logo_final_on_white.png' style={{ height: 50 }} />
+
+                    <Menu
+                        style={{ width: "100%" }}
+                        mode="horizontal"
+                        items={items}
+                    />
+                </section>
+                {/* Menu */}
+                <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" style={{ cursor: "pointer" }} onClick={openDrawer} />
+
+                <Drawer placement="right"
+                    onClose={onClose}
+                    open={open}
+                    extra={
+                        <Space>
+                            <Button onClick={onClose}>Cancel</Button>
+                            <Button onClick={() => {
+                                signOut();
+                                setOpen(false);
+
+                            }} danger>
+                                Logout
+                            </Button>
+                            <Button onClick={onClose} type="primary">
+                                Changes
+                            </Button>
+                        </Space>
+                    }
+                >
+                    <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} form={form}>
+                        <Form.Item label="Email" colon={false} name="email">
+                            <Input disabled />
+                        </Form.Item>
+                        {/* <Form.Item label="Department" colon={false}>
+                            <Input disabled />
+                        </Form.Item> */}
+                        <Form.Item label="Username" colon={false} name="name">
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="Avatar" colon={false}>
+                            {/* <Input type='file' /> */}
+                            <img src={avatar} style={{ width: 50, height: 50, borderRadius: "100%", objectFit: "cover" }} alt="avatar" />
+                        </Form.Item>
+
+                    </Form>
+                    <Divider><span style={{ fontSize: 20 }}>Activites</span></Divider>
+                    {
+                        sampleActivities.map(i => {
+                            return <div key={i}>
+                                <a>{i}</a>
+                                <Divider />
+                            </div>
+                        })
+                    }
+                </Drawer>
+
+            </header>
 
 
-          </Drawer>
 
-        </header>
 
-        {children}
-    </div>
-  )
+            {children}
+        </div>
+    )
 }
