@@ -3,6 +3,8 @@ import Department from '../component/Department';
 import { Tabs } from 'antd'
 import React from 'react'
 import {Categories} from '@/component/category';
+import TermCondition from '../component/TermCondition';
+import TopicIdea from '@/component/TopicIdea'
 
 export default function Admin() {
   const items = [
@@ -19,7 +21,7 @@ export default function Admin() {
     {
       key: '3',
       label: `TOPICS & IDEAS`,
-      //children: <TopicIdea/>,
+      children: <TopicIdea/>,
   },
   {
       key: '7',
@@ -29,7 +31,7 @@ export default function Admin() {
   {
       key: '5',
       label: `TERMS & CONDITIONS`,
-      //children: <TermCondition />,
+      children: <TermCondition />,
   },
   {
       key: '6',

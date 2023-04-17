@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import { Avatar, Button, Divider, Drawer, Form, Input, Menu, Space, Upload } from "antd"
-//import { MailOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { BiHomeAlt } from "react-icons/bi"
 import { FcIdea } from "react-icons/fc"
 import { FcDepartment } from "react-icons/fc"

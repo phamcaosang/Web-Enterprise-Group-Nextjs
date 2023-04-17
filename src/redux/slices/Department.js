@@ -1,6 +1,5 @@
 import { indexApi } from "./index"
 
-
 const extendedApi = indexApi.injectEndpoints({
     endpoints: (build) =>({
         getDepartments: build.query({
@@ -18,7 +17,7 @@ const extendedApi = indexApi.injectEndpoints({
             }),
             invalidatesTags:["Department"]
         }),
-        updateDepartment: build.mutation({
+        updateDepartmentById: build.mutation({
             query: (data) => ({
                 url: `department/${data.id}`,
                 method: "PUT",
@@ -37,4 +36,4 @@ const extendedApi = indexApi.injectEndpoints({
     overrideExisting: false,
 })
 
-export const {useGetDepartmentsQuery, useAddDepartmentMutation, useDeleteDepartmentByIdMutation, useUpdateDepartmentMutation } = extendedApi 
+export const {useGetDepartmentsQuery, useAddDepartmentMutation, useDeleteDepartmentByIdMutation, useUpdateDepartmentByIdMutation } = extendedApi 
